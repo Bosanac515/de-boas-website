@@ -6,19 +6,24 @@
   <title>De Boas Brazilian Steakhouse — Architecture &amp; Engineering Capstone</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
-    /* ── Reset & Base ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --gold: #c9952a;
       --gold-light: #e8b84b;
+      --gold-pale: #f5d98a;
       --gold-dim: rgba(201,149,42,0.18);
-      --bg: #0b0b0b;
-      --bg2: #111111;
-      --bg3: #161616;
+      --gold-glow: rgba(201,149,42,0.35);
+      --green-deep: #0d1f0d;
+      --green-mid: #163316;
+      --bg: #080808;
+      --bg2: #0f0f0f;
+      --bg3: #141414;
+      --bg4: #1a1a1a;
       --text: #e8e0d0;
-      --muted: #8a8070;
+      --muted: #7a7060;
+      --muted2: #a09888;
       --white: #ffffff;
     }
     html { scroll-behavior: smooth; }
@@ -31,642 +36,833 @@
       overflow-x: hidden;
     }
 
-    /* ── Nav ── */
+    /* ═══════════════════════════════════════
+       NAV
+    ═══════════════════════════════════════ */
     nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 48px;
-      background: linear-gradient(to bottom, rgba(11,11,11,0.97), transparent);
-      transition: background 0.3s;
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 56px;
+      transition: background 0.4s, padding 0.4s, box-shadow 0.4s;
     }
-    nav.scrolled { background: rgba(11,11,11,0.97); border-bottom: 1px solid var(--gold-dim); }
+    nav.scrolled {
+      background: rgba(8,8,8,0.96);
+      padding: 14px 56px;
+      box-shadow: 0 1px 0 var(--gold-dim), 0 8px 32px rgba(0,0,0,0.6);
+      backdrop-filter: blur(12px);
+    }
     .nav-logo {
       font-family: 'Dancing Script', cursive;
-      font-size: 1.5rem;
-      color: var(--gold);
-      letter-spacing: 0.02em;
-      text-decoration: none;
+      font-size: 1.6rem; color: var(--gold);
+      text-decoration: none; letter-spacing: 0.02em;
+      text-shadow: 0 0 20px rgba(201,149,42,0.4);
     }
-    .nav-links {
-      display: flex;
-      gap: 32px;
-      list-style: none;
-    }
+    .nav-links { display: flex; gap: 36px; list-style: none; }
     .nav-links a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 0.78rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
+      color: rgba(232,224,208,0.55);
+      text-decoration: none; font-size: 0.73rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
       transition: color 0.2s;
     }
     .nav-links a:hover { color: var(--gold); }
 
-    /* ── Hero ── */
+    /* ═══════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════ */
     .hero {
-      position: relative;
-      height: 100vh;
-      min-height: 600px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      overflow: hidden;
+      position: relative; height: 100vh; min-height: 680px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; overflow: hidden;
+      background: #050a05;
     }
-    .hero-bg {
-      position: absolute;
-      inset: 0;
-      background-image: url('assets/slides/slide_01.png');
-      background-size: cover;
-      background-position: center top;
-      filter: brightness(0.35);
-      transform: scale(1.04);
+    #hero-canvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%; z-index: 0;
     }
-    .hero-overlay {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at center, transparent 30%, rgba(11,11,11,0.7) 100%);
+    /* Radial vignette glow */
+    .hero-glow {
+      position: absolute; inset: 0; z-index: 1;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 75%, rgba(180,110,10,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 120% 80% at 50% 100%, rgba(20,55,20,0.5) 0%, transparent 60%),
+        radial-gradient(ellipse 100% 100% at 50% 0%, rgba(5,10,5,0.8) 0%, transparent 50%);
+    }
+    /* SVG leaf decorations */
+    .hero-leaves {
+      position: absolute; inset: 0; z-index: 2;
+      pointer-events: none; overflow: hidden;
     }
     .hero-bottom-fade {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 200px;
-      background: linear-gradient(to bottom, transparent, var(--bg));
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 220px; z-index: 3;
+      background: linear-gradient(to bottom, transparent, #080808);
     }
     .hero-content {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
+      position: relative; z-index: 4;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 14px;
       padding: 0 24px;
     }
+    .hero-badge {
+      width: 88px; height: 88px; margin-bottom: 8px;
+      border-radius: 50%;
+      border: 1px solid var(--gold-dim);
+      display: flex; align-items: center; justify-content: center;
+      background: radial-gradient(circle, rgba(201,149,42,0.12), rgba(201,149,42,0.04));
+      box-shadow: 0 0 30px rgba(201,149,42,0.15), inset 0 0 20px rgba(201,149,42,0.08);
+    }
+    .hero-badge svg { width: 44px; height: 44px; }
     .hero-eyebrow {
-      font-size: 0.72rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--gold);
+      font-size: 0.68rem; letter-spacing: 0.26em;
+      text-transform: uppercase; color: var(--gold);
       font-weight: 500;
     }
     .hero-title {
       font-family: 'Dancing Script', cursive;
-      font-size: clamp(3.5rem, 9vw, 7rem);
-      color: var(--white);
-      line-height: 1.05;
-      text-shadow: 0 2px 40px rgba(0,0,0,0.8);
+      font-size: clamp(4.5rem, 11vw, 9rem);
+      color: var(--white); line-height: 1;
+      text-shadow: 0 0 60px rgba(201,149,42,0.3), 0 4px 40px rgba(0,0,0,0.8);
+      letter-spacing: -0.01em;
     }
     .hero-subtitle {
       font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
-      color: var(--gold-light);
-      letter-spacing: 0.04em;
+      font-style: italic; font-size: clamp(1.1rem, 2.5vw, 1.7rem);
+      color: var(--gold-light); letter-spacing: 0.06em;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.6);
     }
-    .hero-divider {
-      width: 60px;
-      height: 1px;
-      background: var(--gold);
-      opacity: 0.6;
+    .hero-rule {
+      display: flex; align-items: center; gap: 14px;
+      width: 260px;
+    }
+    .hero-rule::before, .hero-rule::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      opacity: 0.5;
+    }
+    .hero-rule-diamond {
+      width: 6px; height: 6px;
+      background: var(--gold); transform: rotate(45deg);
+      flex-shrink: 0;
     }
     .hero-meta {
-      font-size: 0.8rem;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      text-transform: uppercase;
+      font-size: 0.72rem; letter-spacing: 0.16em;
+      color: var(--muted); text-transform: uppercase;
+    }
+    .hero-chips {
+      display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+      margin-top: 6px;
+    }
+    .hero-chip {
+      padding: 6px 16px;
+      border: 1px solid var(--gold-dim);
+      background: rgba(201,149,42,0.06);
+      font-size: 0.68rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted2);
+      border-radius: 2px;
     }
     .hero-scroll {
-      position: absolute;
-      bottom: 32px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      color: var(--muted);
-      font-size: 0.68rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      animation: bounce 2.4s ease-in-out infinite;
+      position: absolute; bottom: 36px; left: 50%;
+      transform: translateX(-50%); z-index: 5;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      color: var(--muted); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase;
+      animation: pulseDown 2.6s ease-in-out infinite;
     }
-    .hero-scroll::after {
-      content: '';
-      display: block;
-      width: 1px;
-      height: 40px;
+    .scroll-line {
+      width: 1px; height: 44px;
       background: linear-gradient(to bottom, var(--gold), transparent);
     }
-    @keyframes bounce {
-      0%, 100% { transform: translateX(-50%) translateY(0); }
-      50% { transform: translateX(-50%) translateY(6px); }
+    @keyframes pulseDown {
+      0%,100% { opacity:0.5; transform:translateX(-50%) translateY(0); }
+      50% { opacity:1; transform:translateX(-50%) translateY(7px); }
     }
 
-    /* ── Section base ── */
-    section { padding: 100px 0; }
-    .container {
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 0 40px;
-    }
+    /* ═══════════════════════════════════════
+       SHARED SECTION STYLES
+    ═══════════════════════════════════════ */
+    section { padding: 110px 0; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
     .section-label {
-      font-size: 0.7rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--gold);
-      font-weight: 500;
-      margin-bottom: 12px;
+      font-size: 0.68rem; letter-spacing: 0.24em;
+      text-transform: uppercase; color: var(--gold);
+      font-weight: 500; margin-bottom: 10px;
     }
     .section-title {
       font-family: 'Dancing Script', cursive;
-      font-size: clamp(2.4rem, 5vw, 3.8rem);
-      color: var(--white);
-      line-height: 1.1;
-      margin-bottom: 20px;
+      font-size: clamp(2.6rem, 5vw, 4.2rem);
+      color: var(--white); line-height: 1.08; margin-bottom: 18px;
     }
     .section-rule {
-      width: 48px;
-      height: 2px;
-      background: var(--gold);
-      margin-bottom: 32px;
+      display: flex; align-items: center; gap: 12px;
+      width: 180px; margin-bottom: 28px;
+    }
+    .section-rule::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(to right, var(--gold), transparent);
+    }
+    .section-rule-dot {
+      width: 5px; height: 5px; background: var(--gold);
+      border-radius: 50%; flex-shrink: 0;
     }
     .section-body {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1.15rem;
-      color: #c8bfb0;
-      line-height: 1.85;
-      max-width: 680px;
+      font-size: 1.15rem; color: var(--muted2);
+      line-height: 1.88; max-width: 660px;
     }
 
-    /* ── About ── */
-    .about { background: var(--bg2); }
+    /* ═══════════════════════════════════════
+       ABOUT
+    ═══════════════════════════════════════ */
+    .about {
+      background: var(--bg2);
+      position: relative; overflow: hidden;
+    }
+    .about::before {
+      content: 'DE BOAS';
+      position: absolute; top: 50%; left: -2%;
+      transform: translateY(-50%);
+      font-family: 'Dancing Script', cursive;
+      font-size: 22vw; color: rgba(201,149,42,0.025);
+      white-space: nowrap; pointer-events: none;
+      line-height: 1; z-index: 0;
+    }
+    .about .container { position: relative; z-index: 1; }
     .about-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      align-items: center;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 80px; align-items: center;
+    }
+    .about-image {
+      position: relative;
+    }
+    .about-image::before {
+      content: '';
+      position: absolute; inset: -12px;
+      border: 1px solid var(--gold-dim);
+      z-index: 0; border-radius: 2px;
+    }
+    .about-image::after {
+      content: '';
+      position: absolute; inset: 0;
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.4);
+      z-index: 2; pointer-events: none;
     }
     .about-image img {
-      width: 100%;
+      position: relative; z-index: 1;
+      width: 100%; display: block;
       border-radius: 2px;
-      border: 1px solid var(--gold-dim);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      filter: brightness(0.92) contrast(1.05);
+    }
+    .about-image-tag {
+      position: absolute; bottom: -20px; right: -20px; z-index: 3;
+      background: var(--bg3); border: 1px solid var(--gold-dim);
+      padding: 14px 20px; text-align: right;
+    }
+    .about-image-tag span {
+      display: block; font-size: 0.68rem;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+    }
+    .about-image-tag strong {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem; color: var(--gold-light);
     }
     .about-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      margin-top: 40px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 20px; margin-top: 44px;
     }
     .stat {
+      padding: 20px 20px 20px 0;
       border-left: 2px solid var(--gold);
-      padding-left: 16px;
+      padding-left: 20px;
+      background: linear-gradient(to right, rgba(201,149,42,0.05), transparent);
     }
     .stat-value {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 2rem;
-      color: var(--gold-light);
-      line-height: 1;
+      font-size: 2.2rem; color: var(--gold-light);
+      line-height: 1; font-weight: 600;
     }
     .stat-label {
-      font-size: 0.72rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-top: 4px;
+      font-size: 0.68rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted); margin-top: 5px;
     }
 
-    /* ── Phases ── */
-    .phases { background: var(--bg); }
+    /* ═══════════════════════════════════════
+       PHASES
+    ═══════════════════════════════════════ */
+    .phases {
+      background: var(--bg);
+      position: relative; overflow: hidden;
+    }
+    .phases-bg-pattern {
+      position: absolute; inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        repeating-linear-gradient(
+          45deg,
+          rgba(201,149,42,0.02) 0px, rgba(201,149,42,0.02) 1px,
+          transparent 1px, transparent 40px
+        );
+    }
+    .phases .container { position: relative; z-index: 1; }
     .phases-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2px;
-      margin-top: 56px;
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1px; margin-top: 60px;
+      background: var(--gold-dim);
+      border: 1px solid var(--gold-dim);
     }
     .phase-card {
-      background: var(--bg3);
-      padding: 40px 32px;
-      border-top: 1px solid var(--gold-dim);
-      transition: border-color 0.3s;
+      background: var(--bg2);
+      padding: 48px 36px;
+      position: relative; overflow: hidden;
+      transition: background 0.3s;
     }
-    .phase-card:hover { border-top-color: var(--gold); }
+    .phase-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(to right, var(--gold), var(--gold-light), var(--gold));
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+    .phase-card:hover::before { transform: scaleX(1); }
+    .phase-card:hover { background: var(--bg3); }
     .phase-num {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 3rem;
-      color: var(--gold-dim);
-      line-height: 1;
-      margin-bottom: 16px;
+      font-size: 5rem; line-height: 1;
+      color: rgba(201,149,42,0.08);
+      position: absolute; top: 16px; right: 24px;
+      font-weight: 600; transition: color 0.3s;
     }
-    .phase-card:hover .phase-num { color: rgba(201,149,42,0.4); }
+    .phase-card:hover .phase-num { color: rgba(201,149,42,0.15); }
+    .phase-icon {
+      width: 40px; height: 40px; margin-bottom: 20px;
+      border: 1px solid var(--gold-dim); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--gold-dim);
+    }
+    .phase-icon svg { width: 18px; height: 18px; }
     .phase-name {
-      font-size: 0.78rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 12px;
+      font-size: 0.68rem; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 10px;
     }
     .phase-card h3 {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1.35rem;
-      font-weight: 600;
-      color: var(--white);
-      margin-bottom: 14px;
+      font-size: 1.5rem; font-weight: 600;
+      color: var(--white); margin-bottom: 14px; line-height: 1.2;
     }
     .phase-card p {
-      font-size: 0.88rem;
-      color: var(--muted);
-      line-height: 1.7;
+      font-size: 0.86rem; color: var(--muted); line-height: 1.75;
     }
 
-    /* ── Floor Plans ── */
-    .floorplans { background: var(--bg2); }
+    /* ═══════════════════════════════════════
+       FLOOR PLANS
+    ═══════════════════════════════════════ */
+    .floorplans {
+      background: var(--bg2);
+      position: relative;
+    }
+    .floorplans::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+    }
     .plans-tabs {
-      display: flex;
-      gap: 0;
-      margin-top: 48px;
-      margin-bottom: 32px;
-      border-bottom: 1px solid var(--gold-dim);
+      display: flex; gap: 0; margin-top: 52px; margin-bottom: 32px;
+      border-bottom: 1px solid rgba(201,149,42,0.12);
     }
     .tab-btn {
-      background: none;
-      border: none;
-      padding: 14px 32px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.78rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
+      background: none; border: none; padding: 14px 36px;
+      font-family: 'Inter', sans-serif; font-size: 0.72rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted); cursor: pointer;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
       transition: color 0.2s, border-color 0.2s;
     }
     .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
     .tab-btn:hover { color: var(--gold-light); }
     .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
+    .tab-panel.active { display: block; animation: fadeUp 0.4s ease; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
     .plan-frame {
-      background: #1a1a1a;
+      position: relative;
+      background: var(--bg3); padding: 20px;
       border: 1px solid var(--gold-dim);
-      padding: 16px;
-      border-radius: 2px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,149,42,0.05);
     }
     .plan-frame img {
-      width: 100%;
-      display: block;
-      cursor: zoom-in;
+      width: 100%; display: block; cursor: zoom-in;
+      transition: transform 0.4s;
     }
+    .plan-frame:hover img { transform: scale(1.01); }
     .plan-caption {
-      margin-top: 16px;
-      font-size: 0.78rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      text-align: center;
+      margin-top: 16px; font-size: 0.72rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); text-align: center;
     }
 
-    /* ── Cross Sections ── */
-    .sections-wrap { background: var(--bg); }
+    /* ═══════════════════════════════════════
+       CROSS SECTIONS
+    ═══════════════════════════════════════ */
+    .sections-wrap {
+      background: var(--bg);
+      position: relative; overflow: hidden;
+    }
     .section-slides {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      margin-top: 48px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 20px; margin-top: 52px;
     }
     .slide-card {
+      position: relative; overflow: hidden;
       background: var(--bg3);
-      border: 1px solid var(--gold-dim);
-      overflow: hidden;
+      border: 1px solid rgba(201,149,42,0.1);
       cursor: zoom-in;
-      transition: border-color 0.3s, transform 0.3s;
+      transition: border-color 0.3s, box-shadow 0.3s;
     }
-    .slide-card:hover { border-color: var(--gold); transform: translateY(-3px); }
-    .slide-card img { width: 100%; display: block; }
+    .slide-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(201,149,42,0.06) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .slide-card:hover {
+      border-color: var(--gold);
+      box-shadow: 0 0 30px rgba(201,149,42,0.12), 0 12px 40px rgba(0,0,0,0.5);
+    }
+    .slide-card img { width: 100%; display: block; transition: transform 0.5s; }
+    .slide-card:hover img { transform: scale(1.03); }
     .slide-card-label {
-      padding: 14px 18px;
-      font-size: 0.72rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      border-top: 1px solid var(--gold-dim);
+      padding: 14px 20px;
+      font-size: 0.68rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--muted);
+      border-top: 1px solid rgba(201,149,42,0.1);
+      background: var(--bg4);
     }
 
-    /* ── 3D View ── */
-    .model-view { background: var(--bg2); }
+    /* ═══════════════════════════════════════
+       3D MODEL
+    ═══════════════════════════════════════ */
+    .model-view {
+      background: var(--bg2);
+      position: relative; overflow: hidden;
+    }
+    .model-view::before {
+      content: '';
+      position: absolute; bottom: -100px; right: -100px;
+      width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,149,42,0.05), transparent 70%);
+      pointer-events: none;
+    }
     .model-showcase {
-      margin-top: 48px;
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 32px;
-      align-items: start;
+      margin-top: 52px; display: grid;
+      grid-template-columns: 5fr 3fr; gap: 36px; align-items: start;
     }
     .model-img-wrap {
-      border: 1px solid var(--gold-dim);
-      overflow: hidden;
-      background: #0f0f0f;
+      position: relative;
+      border: 1px solid var(--gold-dim); overflow: hidden;
       cursor: zoom-in;
     }
-    .model-img-wrap img { width: 100%; display: block; transition: transform 0.6s; }
-    .model-img-wrap:hover img { transform: scale(1.03); }
-    .model-info { display: flex; flex-direction: column; gap: 20px; }
+    .model-img-wrap::before {
+      content: '';
+      position: absolute; inset: 0; z-index: 2;
+      background: linear-gradient(135deg, rgba(201,149,42,0.04) 0%, transparent 40%);
+      pointer-events: none;
+    }
+    .model-img-wrap img {
+      width: 100%; display: block; transition: transform 0.6s;
+    }
+    .model-img-wrap:hover img { transform: scale(1.04); }
+    .model-info { display: flex; flex-direction: column; gap: 2px; }
     .info-block {
-      padding: 24px;
+      padding: 24px 26px;
       background: var(--bg3);
       border-left: 2px solid var(--gold);
+      position: relative; overflow: hidden;
+      transition: background 0.3s;
     }
+    .info-block::before {
+      content: '';
+      position: absolute; top: 0; right: 0;
+      width: 40px; height: 100%;
+      background: linear-gradient(to left, rgba(201,149,42,0.04), transparent);
+    }
+    .info-block:hover { background: var(--bg4); }
     .info-block h4 {
-      font-size: 0.72rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 10px;
+      font-size: 0.68rem; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
     }
     .info-block p {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1rem;
-      color: #a09888;
-      line-height: 1.65;
+      font-size: 1rem; color: var(--muted); line-height: 1.65;
     }
 
-    /* ── Renderings ── */
-    .renderings { background: var(--bg); }
+    /* ═══════════════════════════════════════
+       RENDERINGS
+    ═══════════════════════════════════════ */
+    .renderings {
+      background: var(--bg);
+      position: relative; overflow: hidden;
+    }
     .rendering-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 3px;
-      margin-top: 48px;
+      grid-template-columns: 2fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 3px; margin-top: 52px;
     }
     .render-item {
-      position: relative;
-      overflow: hidden;
-      cursor: zoom-in;
-      aspect-ratio: 16/10;
-      background: #0f0f0f;
+      position: relative; overflow: hidden;
+      cursor: zoom-in; background: #0a0a0a;
     }
+    .render-item:nth-child(1) { grid-row: span 1; aspect-ratio: 16/9; }
+    .render-item:nth-child(2) { aspect-ratio: 4/3; }
+    .render-item:nth-child(3) { aspect-ratio: 4/3; }
     .render-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.6s ease, filter 0.4s;
-      filter: brightness(0.9);
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.7s ease, filter 0.4s;
+      filter: brightness(0.88) saturate(1.1);
     }
-    .render-item:hover img { transform: scale(1.07); filter: brightness(1.05); }
+    .render-item:hover img {
+      transform: scale(1.06); filter: brightness(1.0) saturate(1.15);
+    }
     .render-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
-      display: flex;
-      align-items: flex-end;
-      padding: 16px;
-      opacity: 0;
-      transition: opacity 0.3s;
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 40%, transparent 60%);
+      display: flex; align-items: flex-end;
+      padding: 22px; opacity: 0; transition: opacity 0.35s;
     }
     .render-item:hover .render-overlay { opacity: 1; }
     .render-label {
-      font-size: 0.7rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--gold);
+      font-size: 0.68rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--gold-pale);
+    }
+    .rendering-caption {
+      grid-column: 1 / -1; padding: 16px 0 0;
+      font-size: 0.72rem; letter-spacing: 0.08em;
+      color: var(--muted); text-align: center;
     }
 
-    /* ── Materials ── */
-    .materials { background: var(--bg2); }
+    /* ═══════════════════════════════════════
+       MATERIALS
+    ═══════════════════════════════════════ */
+    .materials {
+      background: var(--bg2);
+      position: relative; overflow: hidden;
+    }
+    .materials::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+    }
     .materials-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 64px;
-      align-items: start;
-      margin-top: 48px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 72px; align-items: start; margin-top: 52px;
     }
     .materials-img {
-      border: 1px solid var(--gold-dim);
-      overflow: hidden;
+      position: relative;
     }
-    .materials-img img { width: 100%; display: block; }
-    .materials-list { display: flex; flex-direction: column; gap: 0; }
-    .material-group { margin-bottom: 36px; }
+    .materials-img::before {
+      content: '';
+      position: absolute; top: -10px; left: -10px; right: 10px; bottom: 10px;
+      border: 1px solid var(--gold-dim); z-index: 0;
+    }
+    .materials-img img {
+      position: relative; z-index: 1;
+      width: 100%; display: block;
+      box-shadow: 12px 12px 40px rgba(0,0,0,0.5);
+    }
+    .material-group { margin-bottom: 32px; }
     .material-group h4 {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--gold-light);
-      margin-bottom: 14px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--gold-dim);
+      font-size: 1.05rem; font-weight: 600;
+      color: var(--gold-light); margin-bottom: 12px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .material-group h4::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(to right, var(--gold-dim), transparent);
     }
     .material-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      font-size: 0.9rem;
-      color: #b0a898;
+      display: flex; align-items: center; gap: 12px;
+      padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.03);
+      font-size: 0.88rem; color: #9a9080; transition: color 0.2s;
     }
+    .material-item:hover { color: var(--text); }
     .material-item::before {
-      content: '';
-      width: 6px;
-      height: 6px;
-      background: var(--gold);
-      border-radius: 50%;
-      flex-shrink: 0;
+      content: ''; width: 5px; height: 5px;
+      background: var(--gold); border-radius: 50%; flex-shrink: 0;
     }
     .materials-note {
-      margin-top: 20px;
-      padding: 20px;
+      margin-top: 24px; padding: 22px 24px;
       background: var(--bg3);
       border-left: 2px solid var(--gold);
       font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-size: 1rem;
-      color: #8a8070;
-      line-height: 1.7;
+      font-style: italic; font-size: 1.02rem;
+      color: var(--muted); line-height: 1.75;
     }
 
-    /* ── Code Compliance ── */
-    .compliance { background: var(--bg); }
+    /* ═══════════════════════════════════════
+       CODE COMPLIANCE
+    ═══════════════════════════════════════ */
+    .compliance {
+      background: var(--bg);
+      position: relative; overflow: hidden;
+    }
+    .compliance-bg {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        radial-gradient(circle at 20% 50%, rgba(20,60,20,0.12) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(201,149,42,0.05) 0%, transparent 50%);
+    }
+    .compliance .container { position: relative; z-index: 1; }
     .code-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 32px;
-      margin-top: 48px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 20px; margin-top: 52px;
     }
     .code-card {
       background: var(--bg3);
-      border: 1px solid var(--gold-dim);
-      padding: 32px;
+      border: 1px solid rgba(201,149,42,0.1);
+      padding: 34px; position: relative; overflow: hidden;
+      transition: border-color 0.3s;
+    }
+    .code-card:hover { border-color: rgba(201,149,42,0.3); }
+    .code-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(to right, var(--gold), transparent);
     }
     .code-card h3 {
-      font-size: 0.72rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 20px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--gold-dim);
+      font-size: 0.68rem; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: 22px; padding-bottom: 14px;
+      border-bottom: 1px solid rgba(201,149,42,0.12);
     }
     .code-item {
-      display: flex;
-      gap: 14px;
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
+      display: flex; gap: 14px; padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
       align-items: flex-start;
     }
     .code-tag {
-      font-size: 0.67rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      color: var(--gold);
-      background: var(--gold-dim);
-      padding: 2px 7px;
-      border-radius: 2px;
-      white-space: nowrap;
-      flex-shrink: 0;
-      margin-top: 2px;
+      font-size: 0.63rem; font-weight: 600; letter-spacing: 0.06em;
+      color: var(--gold); background: rgba(201,149,42,0.1);
+      padding: 3px 8px; border-radius: 2px;
+      white-space: nowrap; flex-shrink: 0; margin-top: 2px;
+      border: 1px solid rgba(201,149,42,0.2);
     }
     .code-desc {
-      font-size: 0.83rem;
-      color: #8a8070;
-      line-height: 1.55;
+      font-size: 0.83rem; color: var(--muted); line-height: 1.55;
     }
-    .compliance-img-wrap {
-      margin-top: 48px;
+
+    /* ═══════════════════════════════════════
+       LOCATION
+    ═══════════════════════════════════════ */
+    .location {
+      background: var(--bg2);
+      position: relative;
+    }
+    .location::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+    }
+    .map-wrapper {
+      margin-top: 52px; position: relative;
+    }
+    .map-wrapper::before {
+      content: '';
+      position: absolute; top: -10px; left: -10px; right: 10px; bottom: 10px;
+      border: 1px solid var(--gold-dim); z-index: 0; pointer-events: none;
+    }
+    .map-frame {
+      position: relative; z-index: 1;
+      border: 1px solid rgba(201,149,42,0.2);
+      overflow: hidden; line-height: 0;
+      box-shadow: 12px 12px 60px rgba(0,0,0,0.5);
+    }
+    .map-frame iframe {
+      width: 100%; height: 480px; display: block;
+      border: 0; filter: grayscale(20%) contrast(1.05);
+    }
+    .map-footer {
+      margin-top: 22px; display: flex;
+      align-items: center; justify-content: center; gap: 24px;
+    }
+    .map-coord {
+      font-size: 0.68rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .map-sep { width: 4px; height: 4px; background: var(--gold); border-radius: 50%; }
+
+    /* ═══════════════════════════════════════
+       TEAM
+    ═══════════════════════════════════════ */
+    .team {
+      background: var(--bg);
+      position: relative; overflow: hidden;
+    }
+    .team-bg {
+      position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(201,149,42,0.04), transparent);
+    }
+    .team .container { position: relative; z-index: 1; }
+    .team-header { text-align: center; }
+    .team-header .section-rule { margin: 0 auto 28px; }
+    .team-header .section-body { margin: 0 auto; text-align: center; }
+    .team-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 2px; margin-top: 60px;
+      background: rgba(201,149,42,0.06);
       border: 1px solid var(--gold-dim);
     }
-    .compliance-img-wrap img { width: 100%; display: block; }
-
-    /* ── Team ── */
-    .team { background: var(--bg2); }
-    .team-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 2px;
-      margin-top: 56px;
-    }
     .team-member {
-      background: var(--bg3);
-      padding: 40px 24px;
-      text-align: center;
-      border-top: 1px solid var(--gold-dim);
-      transition: border-top-color 0.3s;
+      background: var(--bg2);
+      padding: 48px 24px; text-align: center;
+      position: relative; overflow: hidden;
+      transition: background 0.3s;
     }
-    .team-member:hover { border-top-color: var(--gold); }
+    .team-member::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      transform: scaleX(0); transform-origin: center;
+      transition: transform 0.4s;
+    }
+    .team-member:hover::before { transform: scaleX(1); }
+    .team-member:hover { background: var(--bg3); }
+    .member-ring {
+      width: 72px; height: 72px; margin: 0 auto 22px;
+      position: relative;
+    }
+    .member-ring::before {
+      content: '';
+      position: absolute; inset: 0; border-radius: 50%;
+      border: 1px solid var(--gold-dim);
+      animation: ringPulse 3s ease-in-out infinite;
+    }
+    .team-member:nth-child(2) .member-ring::before { animation-delay: 0.75s; }
+    .team-member:nth-child(3) .member-ring::before { animation-delay: 1.5s; }
+    .team-member:nth-child(4) .member-ring::before { animation-delay: 2.25s; }
+    @keyframes ringPulse {
+      0%,100% { transform: scale(1); opacity: 0.4; }
+      50% { transform: scale(1.15); opacity: 0.8; }
+    }
     .member-initial {
-      width: 64px;
-      height: 64px;
-      background: var(--gold-dim);
-      border: 1px solid var(--gold);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px;
+      width: 72px; height: 72px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,149,42,0.15), rgba(201,149,42,0.04));
+      border: 1px solid var(--gold-dim);
+      display: flex; align-items: center; justify-content: center;
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1.6rem;
-      color: var(--gold);
+      font-size: 1.8rem; color: var(--gold);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .team-member:hover .member-initial {
+      border-color: var(--gold);
+      box-shadow: 0 0 20px rgba(201,149,42,0.2);
     }
     .member-name {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--white);
-      margin-bottom: 6px;
+      font-size: 1.3rem; font-weight: 600;
+      color: var(--white); margin-bottom: 6px;
     }
     .member-role {
-      font-size: 0.72rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
+      font-size: 0.68rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted);
     }
 
-    /* ── Footer ── */
+    /* ═══════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════ */
     footer {
       background: var(--bg);
       border-top: 1px solid var(--gold-dim);
-      padding: 56px 0;
-      text-align: center;
+      padding: 80px 0 48px;
+      position: relative; overflow: hidden;
     }
+    footer::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+    .footer-inner { text-align: center; }
+    .footer-emblem {
+      margin: 0 auto 20px;
+      width: 56px; height: 56px; border-radius: 50%;
+      border: 1px solid var(--gold-dim);
+      display: flex; align-items: center; justify-content: center;
+      background: var(--gold-dim);
+    }
+    .footer-emblem svg { width: 28px; height: 28px; }
     .footer-logo {
       font-family: 'Dancing Script', cursive;
-      font-size: 2.4rem;
-      color: var(--gold);
-      margin-bottom: 8px;
+      font-size: 2.8rem; color: var(--gold);
+      text-shadow: 0 0 30px rgba(201,149,42,0.3);
     }
     .footer-tagline {
       font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-size: 1rem;
-      color: var(--muted);
-      margin-bottom: 32px;
+      font-style: italic; font-size: 1rem;
+      color: var(--muted); margin: 8px 0 32px;
+    }
+    .footer-divider {
+      width: 120px; height: 1px; margin: 0 auto 24px;
+      background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
     }
     .footer-meta {
-      font-size: 0.72rem;
-      letter-spacing: 0.1em;
-      color: #4a4840;
-      text-transform: uppercase;
+      font-size: 0.68rem; letter-spacing: 0.12em;
+      color: rgba(122,112,96,0.5); text-transform: uppercase;
     }
 
-    /* ── Lightbox ── */
+    /* ═══════════════════════════════════════
+       LIGHTBOX
+    ═══════════════════════════════════════ */
     .lightbox {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 999;
-      background: rgba(0,0,0,0.92);
-      align-items: center;
-      justify-content: center;
-      cursor: zoom-out;
+      display: none; position: fixed; inset: 0; z-index: 999;
+      background: rgba(0,0,0,0.94); align-items: center;
+      justify-content: center; cursor: zoom-out;
+      backdrop-filter: blur(8px);
     }
-    .lightbox.open { display: flex; }
+    .lightbox.open { display: flex; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
     .lightbox img {
-      max-width: 90vw;
-      max-height: 88vh;
-      object-fit: contain;
+      max-width: 90vw; max-height: 88vh; object-fit: contain;
       border: 1px solid var(--gold-dim);
-      box-shadow: 0 0 80px rgba(0,0,0,0.8);
+      box-shadow: 0 0 100px rgba(0,0,0,0.8), 0 0 40px rgba(201,149,42,0.08);
     }
     .lightbox-close {
-      position: absolute;
-      top: 24px; right: 32px;
-      font-size: 1.8rem;
-      color: var(--muted);
-      cursor: pointer;
-      background: none;
-      border: none;
-      line-height: 1;
-      transition: color 0.2s;
+      position: absolute; top: 24px; right: 32px;
+      font-size: 2rem; color: var(--muted); cursor: pointer;
+      background: none; border: none; line-height: 1; transition: color 0.2s;
     }
     .lightbox-close:hover { color: var(--gold); }
 
-    /* ── Scroll reveal ── */
-    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    /* ═══════════════════════════════════════
+       SCROLL REVEAL
+    ═══════════════════════════════════════ */
+    .reveal {
+      opacity: 0; transform: translateY(32px);
+      transition: opacity 0.75s ease, transform 0.75s ease;
+    }
     .reveal.visible { opacity: 1; transform: none; }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
 
-    /* ── Responsive ── */
-    @media (max-width: 900px) {
+    /* ═══════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════ */
+    @media (max-width: 960px) {
       nav { padding: 16px 24px; }
+      nav.scrolled { padding: 12px 24px; }
       .nav-links { display: none; }
-      .about-grid, .materials-grid, .model-showcase { grid-template-columns: 1fr; gap: 32px; }
-      .phases-grid { grid-template-columns: 1fr; gap: 2px; }
-      .section-slides { grid-template-columns: 1fr; }
-      .code-grid { grid-template-columns: 1fr; }
+      .about-grid, .materials-grid, .model-showcase { grid-template-columns: 1fr; gap: 40px; }
+      .phases-grid { grid-template-columns: 1fr; }
+      .section-slides, .code-grid { grid-template-columns: 1fr; }
       .team-grid { grid-template-columns: repeat(2, 1fr); }
       .rendering-grid { grid-template-columns: 1fr; }
-      .container { padding: 0 20px; }
-      section { padding: 64px 0; }
+      .render-item:nth-child(1) { grid-row: auto; }
+      .container { padding: 0 24px; }
+      section { padding: 72px 0; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Nav -->
+  <!-- ═══ NAV ═══ -->
   <nav id="nav">
     <a href="#" class="nav-logo">De Boas</a>
     <ul class="nav-links">
@@ -675,121 +871,194 @@
       <li><a href="#sections">Sections</a></li>
       <li><a href="#renderings">Renderings</a></li>
       <li><a href="#materials">Materials</a></li>
+      <li><a href="#location">Location</a></li>
       <li><a href="#team">Team</a></li>
     </ul>
   </nav>
 
-  <!-- Hero -->
+  <!-- ═══ HERO ═══ -->
   <section class="hero">
-    <div class="hero-bg"></div>
-    <div class="hero-overlay"></div>
+    <canvas id="hero-canvas"></canvas>
+    <div class="hero-glow"></div>
+
+    <!-- Tropical leaf SVG decorations -->
+    <div class="hero-leaves">
+      <svg viewBox="0 0 400 600" style="position:absolute;left:-60px;bottom:-40px;width:320px;opacity:0.18;" xmlns="http://www.w3.org/2000/svg">
+        <path d="M60,580 C40,400 120,200 200,80 C180,200 220,350 180,480 Z" fill="#2d5a27" />
+        <path d="M80,580 C20,380 160,180 240,60 C200,200 230,370 200,500 Z" fill="#1e4020" opacity="0.7"/>
+        <path d="M20,560 C60,380 80,200 160,100 C130,230 150,390 120,520 Z" fill="#3a6e32" opacity="0.5"/>
+        <path d="M100,560 C80,420 140,260 200,150 L190,480 Z" fill="#4a8040" opacity="0.4"/>
+      </svg>
+      <svg viewBox="0 0 400 600" style="position:absolute;right:-60px;bottom:-40px;width:320px;opacity:0.18;transform:scaleX(-1);" xmlns="http://www.w3.org/2000/svg">
+        <path d="M60,580 C40,400 120,200 200,80 C180,200 220,350 180,480 Z" fill="#2d5a27" />
+        <path d="M80,580 C20,380 160,180 240,60 C200,200 230,370 200,500 Z" fill="#1e4020" opacity="0.7"/>
+        <path d="M20,560 C60,380 80,200 160,100 C130,230 150,390 120,520 Z" fill="#3a6e32" opacity="0.5"/>
+        <path d="M100,560 C80,420 140,260 200,150 L190,480 Z" fill="#4a8040" opacity="0.4"/>
+      </svg>
+      <!-- Top corner leaf sprigs -->
+      <svg viewBox="0 0 300 300" style="position:absolute;top:-20px;left:-30px;width:240px;opacity:0.12;transform:rotate(40deg);" xmlns="http://www.w3.org/2000/svg">
+        <path d="M150,280 C100,180 80,80 150,20 C220,80 200,180 150,280Z" fill="#2d5a27"/>
+        <path d="M130,270 C70,160 90,60 160,10 C220,70 190,180 130,270Z" fill="#3a6e32" opacity="0.6"/>
+      </svg>
+      <svg viewBox="0 0 300 300" style="position:absolute;top:-20px;right:-30px;width:240px;opacity:0.12;transform:rotate(-40deg) scaleX(-1);" xmlns="http://www.w3.org/2000/svg">
+        <path d="M150,280 C100,180 80,80 150,20 C220,80 200,180 150,280Z" fill="#2d5a27"/>
+        <path d="M130,270 C70,160 90,60 160,10 C220,70 190,180 130,270Z" fill="#3a6e32" opacity="0.6"/>
+      </svg>
+    </div>
+
     <div class="hero-bottom-fade"></div>
+
     <div class="hero-content">
+      <!-- Emblem -->
+      <div class="hero-badge">
+        <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="22" cy="22" r="20" stroke="#c9952a" stroke-width="1" opacity="0.6"/>
+          <!-- Skewer/flame icon -->
+          <line x1="14" y1="32" x2="30" y2="12" stroke="#c9952a" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="22" cy="22" r="3" fill="#c9952a" opacity="0.8"/>
+          <circle cx="17" cy="28.5" r="2.2" stroke="#c9952a" stroke-width="1" opacity="0.7"/>
+          <circle cx="27" cy="15.5" r="2.2" stroke="#c9952a" stroke-width="1" opacity="0.7"/>
+          <path d="M20 10 C20 10 18 7 20 5 C22 3 24 6 22 8 C20 10 20 13 22 14 C24 15 25 13 23 11" stroke="#e8b84b" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.8"/>
+        </svg>
+      </div>
+
       <p class="hero-eyebrow">Architecture &amp; Engineering · Capstone Project</p>
       <h1 class="hero-title">De Boas</h1>
       <p class="hero-subtitle">Brazilian Steakhouse — Waukee, Iowa</p>
-      <div class="hero-divider"></div>
+
+      <div class="hero-rule">
+        <div class="hero-rule-diamond"></div>
+      </div>
+
       <p class="hero-meta">Phase III Presentation · Established 2026</p>
+
+      <div class="hero-chips">
+        <div class="hero-chip">Revit BIM</div>
+        <div class="hero-chip">2 Floors · 14' Height</div>
+        <div class="hero-chip">Waukee, Iowa</div>
+        <div class="hero-chip">Steel Frame Construction</div>
+      </div>
     </div>
-    <div class="hero-scroll">Scroll</div>
+
+    <div class="hero-scroll"><span>Explore</span><div class="scroll-line"></div></div>
   </section>
 
-  <!-- About / Overview -->
+  <!-- ═══ ABOUT ═══ -->
   <section class="about" id="overview">
     <div class="container">
       <div class="about-grid">
         <div class="about-text reveal">
           <p class="section-label">Project Overview</p>
           <h2 class="section-title">A Vision for Dining in Iowa</h2>
-          <div class="section-rule"></div>
-          <p class="section-body">
-            De Boas Brazilian Steakhouse is a full-scale two-story restaurant concept designed from the ground up as an architecture and engineering capstone. Located near Target on Ashworth Road in Waukee, Iowa, the project spans site selection, schematic design, structural analysis, code compliance, and interior rendering — all developed in Revit.
-          </p>
-          <p class="section-body" style="margin-top:16px;">
-            The name <em>De Boas</em> — Portuguese for "feeling good" — reflects the warm, communal spirit of Brazilian churrasco culture, elevated to an upscale dining experience that meets Waukee's building codes while delivering a distinctive, thematic atmosphere.
-          </p>
+          <div class="section-rule"><div class="section-rule-dot"></div></div>
+          <p class="section-body">De Boas Brazilian Steakhouse is a full-scale two-story restaurant concept designed from the ground up as an architecture and engineering capstone. Located near Target on Ashworth Road in Waukee, Iowa, the project spans site selection, schematic design, structural analysis, code compliance, and interior rendering — all developed in Revit.</p>
+          <p class="section-body" style="margin-top:16px;">The name <em>De Boas</em> — Portuguese for "feeling good" — reflects the warm, communal spirit of Brazilian churrasco culture, elevated to an upscale dining experience that meets Waukee's building codes while delivering a distinctive, thematic atmosphere centered on the elemental duality of <em>Fire &amp; Water</em>.</p>
           <div class="about-stats">
-            <div class="stat">
+            <div class="stat reveal reveal-delay-1">
               <div class="stat-value">2</div>
               <div class="stat-label">Floors</div>
             </div>
-            <div class="stat">
+            <div class="stat reveal reveal-delay-2">
               <div class="stat-value">3</div>
               <div class="stat-label">Phases</div>
             </div>
-            <div class="stat">
+            <div class="stat reveal reveal-delay-1">
               <div class="stat-value">14'</div>
-              <div class="stat-label">Floor-to-Floor Height</div>
+              <div class="stat-label">Floor-to-Floor</div>
             </div>
-            <div class="stat">
+            <div class="stat reveal reveal-delay-2">
               <div class="stat-value">2026</div>
               <div class="stat-label">Concept Year</div>
             </div>
           </div>
         </div>
-        <div class="about-image reveal">
-          <img src="assets/slides/slide_09.png" alt="3D Model of De Boas" />
+        <div class="about-image reveal reveal-delay-2">
+          <img src="assets/slides/slide_09.png" alt="3D Model of De Boas" class="lightbox-trigger" />
+          <div class="about-image-tag">
+            <span>Revit Model</span>
+            <strong>Isometric View</strong>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Phase Overview -->
+  <!-- ═══ PHASES ═══ -->
   <section class="phases">
+    <div class="phases-bg-pattern"></div>
     <div class="container">
       <div class="reveal">
-        <p class="section-label">Development Phases</p>
-        <h2 class="section-title">The Design Journey</h2>
-        <div class="section-rule"></div>
+        <p class="section-label">Development Journey</p>
+        <h2 class="section-title">Three Phases of Design</h2>
+        <div class="section-rule"><div class="section-rule-dot"></div></div>
       </div>
       <div class="phases-grid">
         <div class="phase-card reveal">
           <div class="phase-num">01</div>
+          <div class="phase-icon">
+            <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="9" cy="9" r="7" stroke="#c9952a" stroke-width="1"/>
+              <circle cx="9" cy="9" r="2" fill="#c9952a" opacity="0.7"/>
+            </svg>
+          </div>
           <p class="phase-name">Phase I</p>
           <h3>Site &amp; Concept</h3>
-          <p>Selected site near Target on Ashworth Road. Developed initial massing model, established the Brazilian steakhouse theme, and produced bubble diagrams to lay out spatial relationships.</p>
+          <p>Selected site near Target on Ashworth Road. Developed initial massing model, established the Brazilian steakhouse theme, and produced bubble diagrams to define the building's spatial relationships.</p>
         </div>
-        <div class="phase-card reveal">
+        <div class="phase-card reveal reveal-delay-1">
           <div class="phase-num">02</div>
+          <div class="phase-icon">
+            <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="14" height="14" stroke="#c9952a" stroke-width="1"/>
+              <line x1="2" y1="9" x2="16" y2="9" stroke="#c9952a" stroke-width="1" opacity="0.5"/>
+              <line x1="9" y1="2" x2="9" y2="16" stroke="#c9952a" stroke-width="1" opacity="0.5"/>
+            </svg>
+          </div>
           <p class="phase-name">Phase II</p>
           <h3>Plans &amp; Analysis</h3>
-          <p>Finalized the floor plan layout. Produced full Revit floor plans, conducted code summaries covering accessibility, structural load, and egress, and performed a structural analysis of the steel framing system.</p>
+          <p>Finalized the floor plan layout in Revit. Produced full architectural drawings, conducted code summaries covering accessibility, structural load, and egress, and completed a structural analysis.</p>
         </div>
-        <div class="phase-card reveal">
+        <div class="phase-card reveal reveal-delay-2">
           <div class="phase-num">03</div>
+          <div class="phase-icon">
+            <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="9,2 16,16 2,16" stroke="#c9952a" stroke-width="1" fill="none"/>
+              <circle cx="9" cy="11" r="1.5" fill="#c9952a" opacity="0.7"/>
+            </svg>
+          </div>
           <p class="phase-name">Phase III</p>
           <h3>Detail &amp; Rendering</h3>
-          <p>Added wall sections and poche to floor plans. Developed cross-sections, detailed code compliance documentation, material selections, and final interior renderings of the dining areas and kitchen.</p>
+          <p>Added wall sections and poche. Developed detailed cross-sections, thorough code compliance documentation, material selections, and final photorealistic interior renderings of all dining spaces.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Floor Plans -->
+  <!-- ═══ FLOOR PLANS ═══ -->
   <section class="floorplans" id="floorplans">
     <div class="container">
       <div class="reveal">
         <p class="section-label">Technical Drawings</p>
         <h2 class="section-title">Floor Plans</h2>
-        <div class="section-rule"></div>
-        <p class="section-body">Two-story layout designed to maximize dining capacity while providing dedicated utility space, centralized circulation, and ADA-compliant restrooms on both levels.</p>
+        <div class="section-rule"><div class="section-rule-dot"></div></div>
+        <p class="section-body">Two-story layout designed to maximize dining capacity on both levels — with dedicated utility space, centralized circulation, ADA-compliant restrooms, and integrated employee and customer zones.</p>
       </div>
       <div class="plans-tabs reveal">
-        <button class="tab-btn active" onclick="switchTab(this, 'floor1')">First Floor</button>
-        <button class="tab-btn" onclick="switchTab(this, 'floor2')">Second Floor</button>
-        <button class="tab-btn" onclick="switchTab(this, 'overview')">Plan Overview</button>
+        <button class="tab-btn active" onclick="switchTab(this,'floor1')">First Floor</button>
+        <button class="tab-btn" onclick="switchTab(this,'floor2')">Second Floor</button>
+        <button class="tab-btn" onclick="switchTab(this,'overview')">Plan Overview</button>
       </div>
       <div class="tab-panel active" id="floor1">
         <div class="plan-frame">
           <img src="assets/slides/slide_10.png" alt="First Floor Plan" class="lightbox-trigger" />
         </div>
-        <p class="plan-caption">Level 1 — 0'-0" · Main Dining, Kitchen, Service Entry</p>
+        <p class="plan-caption">Level 1 — 0'-0" · Main Dining · Kitchen · Service Entry</p>
       </div>
       <div class="tab-panel" id="floor2">
         <div class="plan-frame">
           <img src="assets/slides/slide_11.png" alt="Second Floor Plan" class="lightbox-trigger" />
         </div>
-        <p class="plan-caption">Level 2 — 14'-0" · Upper Dining, Lounge, Restrooms</p>
+        <p class="plan-caption">Level 2 — 14'-0" · Upper Dining · Lounge · Restrooms</p>
       </div>
       <div class="tab-panel" id="overview">
         <div class="plan-frame">
@@ -800,21 +1069,21 @@
     </div>
   </section>
 
-  <!-- Cross Sections -->
+  <!-- ═══ CROSS SECTIONS ═══ -->
   <section class="sections-wrap" id="sections">
     <div class="container">
       <div class="reveal">
         <p class="section-label">Structural Documentation</p>
         <h2 class="section-title">Cross-Sections</h2>
-        <div class="section-rule"></div>
-        <p class="section-body">Detailed sections through the building reveal the two-level structural system, wall assembly, and interior spatial relationships — including kitchen, dining, and circulation zones at both levels.</p>
+        <div class="section-rule"><div class="section-rule-dot"></div></div>
+        <p class="section-body">Detailed building sections reveal the two-level structural system, wall assembly, and interior spatial relationships — including kitchen, dining, and circulation zones at both levels.</p>
       </div>
       <div class="section-slides">
         <div class="slide-card reveal lightbox-trigger">
           <img src="assets/slides/slide_04.png" alt="Cross Section Drawings" />
           <div class="slide-card-label">Longitudinal &amp; Wall Sections</div>
         </div>
-        <div class="slide-card reveal lightbox-trigger">
+        <div class="slide-card reveal reveal-delay-1 lightbox-trigger">
           <img src="assets/slides/slide_08.png" alt="Section View Levels" />
           <div class="slide-card-label">Section View — Level 1 &amp; Level 2</div>
         </div>
@@ -822,71 +1091,71 @@
     </div>
   </section>
 
-  <!-- 3D Model -->
+  <!-- ═══ 3D MODEL ═══ -->
   <section class="model-view">
     <div class="container">
       <div class="reveal">
         <p class="section-label">Digital Model</p>
         <h2 class="section-title">Revit 3D Model</h2>
-        <div class="section-rule"></div>
+        <div class="section-rule"><div class="section-rule-dot"></div></div>
       </div>
       <div class="model-showcase">
         <div class="model-img-wrap reveal lightbox-trigger">
           <img src="assets/slides/slide_09.png" alt="3D Isometric View" />
         </div>
-        <div class="model-info reveal">
+        <div class="model-info reveal reveal-delay-1">
           <div class="info-block">
             <h4>Software</h4>
-            <p>Modeled entirely in Autodesk Revit — enabling coordinated architectural, structural, and MEP documentation from a single BIM model.</p>
+            <p>Modeled entirely in Autodesk Revit — coordinated architectural, structural, and MEP documentation from a single BIM model.</p>
           </div>
           <div class="info-block">
-            <h4>Structural System</h4>
-            <p>Light gauge steel framing with brick and concrete masonry walls. Precast concrete at exterior. Flat roof with rooftop access.</p>
+            <h4>Structure</h4>
+            <p>Light gauge steel framing with brick and concrete masonry. Precast concrete exterior. Flat roof with rooftop access and mechanical equipment.</p>
           </div>
           <div class="info-block">
             <h4>Site</h4>
-            <p>Ashworth Road corridor, Waukee, Iowa. 50-ft riparian buffer from pond, landscaped walking path, 24-ft access lanes, and dedicated parking per IPC &amp; Iowa DNR requirements.</p>
+            <p>Ashworth Road corridor, Waukee, Iowa. 50-ft riparian buffer, 24-ft access lanes, and dedicated parking per IPC &amp; Iowa DNR requirements.</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Renderings -->
+  <!-- ═══ RENDERINGS ═══ -->
   <section class="renderings" id="renderings">
     <div class="container">
       <div class="reveal">
         <p class="section-label">Interior Visualization</p>
         <h2 class="section-title">Renderings</h2>
-        <div class="section-rule"></div>
-        <p class="section-body">Photorealistic renders of the dining room, commercial kitchen, and second-floor lounge showcase the upscale atmosphere envisioned for De Boas — warm wood tones, open floor-to-ceiling windows, and flexible seating throughout.</p>
+        <div class="section-rule"><div class="section-rule-dot"></div></div>
+        <p class="section-body">Photorealistic renders of the dining room, commercial kitchen, and second-floor lounge showcase the upscale atmosphere envisioned for De Boas — warm wood tones, floor-to-ceiling windows, and flexible seating throughout.</p>
       </div>
       <div class="rendering-grid reveal">
-        <div class="render-item lightbox-trigger" style="grid-column: span 2;">
-          <img src="assets/slides/slide_12.png" alt="Dining Room and Kitchen Rendering" />
+        <div class="render-item lightbox-trigger">
+          <img src="assets/slides/slide_12.png" alt="Dining Room and Kitchen" />
           <div class="render-overlay"><span class="render-label">Main Dining &amp; Kitchen</span></div>
         </div>
         <div class="render-item lightbox-trigger">
-          <img src="assets/slides/slide_13.png" alt="Second Floor Lounge Rendering" />
+          <img src="assets/slides/slide_13.png" alt="Second Floor Lounge" />
           <div class="render-overlay"><span class="render-label">Second Floor Lounge</span></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Materials -->
+  <!-- ═══ MATERIALS ═══ -->
   <section class="materials" id="materials">
     <div class="container">
       <div class="reveal">
         <p class="section-label">Material Palette</p>
         <h2 class="section-title">Material Selections</h2>
-        <div class="section-rule"></div>
+        <div class="section-rule"><div class="section-rule-dot"></div></div>
       </div>
       <div class="materials-grid">
         <div class="materials-img reveal lightbox-trigger">
           <img src="assets/slides/slide_14.png" alt="Material Selections Board" />
         </div>
-        <div class="materials-list reveal">
+        <div class="reveal reveal-delay-1">
           <div class="material-group">
             <h4>Structural Materials</h4>
             <div class="material-item">Steel framing</div>
@@ -898,8 +1167,8 @@
             <h4>Aesthetic Finishes</h4>
             <div class="material-item">Rich wood tones — dining surfaces</div>
             <div class="material-item">Marble-look tile — restrooms &amp; corridors</div>
-            <div class="material-item">Warm ambient lighting</div>
-            <div class="material-item">Thematic color palette — Fire &amp; Water</div>
+            <div class="material-item">Warm ambient lighting throughout</div>
+            <div class="material-item">Thematic Fire &amp; Water color palette</div>
           </div>
           <div class="materials-note">
             Materials were chosen to meet Waukee building codes while providing an upscale, thematic experience aligned with the De Boas Fire &amp; Water concept.
@@ -909,17 +1178,18 @@
     </div>
   </section>
 
-  <!-- Code Compliance -->
+  <!-- ═══ CODE COMPLIANCE ═══ -->
   <section class="compliance">
+    <div class="compliance-bg"></div>
     <div class="container">
       <div class="reveal">
         <p class="section-label">Regulatory Compliance</p>
         <h2 class="section-title">Building Code Summary</h2>
-        <div class="section-rule"></div>
-        <p class="section-body">The project was developed in full compliance with applicable IBC, IMC, NEC, ADA, and Iowa DNR codes — documented and cross-referenced in Phase III to ensure design integrity across accessibility, mechanical, and site requirements.</p>
+        <div class="section-rule"><div class="section-rule-dot"></div></div>
+        <p class="section-body">Developed in full compliance with IBC, IMC, NEC, ADA, and Iowa DNR codes — documented and cross-referenced in Phase III to ensure design integrity across accessibility, mechanical, and site requirements.</p>
       </div>
-      <div class="code-grid reveal">
-        <div class="code-card">
+      <div class="code-grid">
+        <div class="code-card reveal">
           <h3>Accessibility &amp; Egress</h3>
           <div class="code-item">
             <span class="code-tag">ADA 2010 §404</span>
@@ -942,7 +1212,7 @@
             <span class="code-desc">ADA-compliant restroom per floor; 1 accessible stall minimum</span>
           </div>
         </div>
-        <div class="code-card">
+        <div class="code-card reveal reveal-delay-1">
           <h3>Mechanical &amp; Electrical</h3>
           <div class="code-item">
             <span class="code-tag">IMC §403</span>
@@ -969,60 +1239,65 @@
     </div>
   </section>
 
-  <!-- Location -->
-  <section class="location" style="background: var(--bg2); padding: 100px 0;">
+  <!-- ═══ LOCATION ═══ -->
+  <section class="location" id="location">
     <div class="container">
       <div class="reveal">
         <p class="section-label">Project Site</p>
         <h2 class="section-title">The Location</h2>
-        <div class="section-rule"></div>
-        <p class="section-body">Situated along the Ashworth Road corridor in Waukee, Iowa — selected for its high-visibility commercial surroundings, proximity to retail traffic, and available acreage to accommodate the building footprint, surface parking, and required riparian buffer.</p>
+        <div class="section-rule"><div class="section-rule-dot"></div></div>
+        <p class="section-body">Situated along the Ashworth Road corridor in Waukee, Iowa — selected for high-visibility commercial surroundings, proximity to retail traffic, and acreage to accommodate the building footprint, surface parking, and required riparian buffer from the adjacent pond.</p>
       </div>
-      <div class="reveal" style="margin-top: 48px; border: 1px solid rgba(201,149,42,0.18); overflow: hidden; line-height: 0;">
-        <iframe
-          src="https://maps.google.com/maps?q=41.60895058493571,-93.85614288786297&z=16&output=embed"
-          width="100%"
-          height="480"
-          style="border:0; display:block;"
-          allowfullscreen=""
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          title="De Boas site — Waukee, Iowa">
-        </iframe>
+      <div class="map-wrapper reveal">
+        <div class="map-frame">
+          <iframe
+            src="https://maps.google.com/maps?q=41.60895058493571,-93.85614288786297&z=16&output=embed"
+            width="100%" height="480"
+            style="border:0; display:block;"
+            allowfullscreen="" loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="De Boas site — Waukee, Iowa">
+          </iframe>
+        </div>
       </div>
-      <p style="margin-top: 14px; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-align: center;">Ashworth Road · Waukee, Iowa · 41.609°N 93.856°W</p>
+      <div class="map-footer reveal">
+        <span class="map-coord">Ashworth Road · Waukee, Iowa</span>
+        <div class="map-sep"></div>
+        <span class="map-coord">41.609°N · 93.856°W</span>
+        <div class="map-sep"></div>
+        <span class="map-coord">Near Target on Ashworth</span>
+      </div>
     </div>
   </section>
 
-  <!-- Team -->
+  <!-- ═══ TEAM ═══ -->
   <section class="team" id="team">
+    <div class="team-bg"></div>
     <div class="container">
-      <div class="reveal" style="text-align:center;">
+      <div class="team-header reveal">
         <p class="section-label">The Team</p>
         <h2 class="section-title">Designers &amp; Engineers</h2>
-        <div class="section-rule" style="margin:0 auto 32px;"></div>
-        <p class="section-body" style="margin:0 auto; text-align:center;">
-          A collaborative architecture and engineering studio project, developed across three phases from initial site analysis through final documentation and rendering.
-        </p>
+        <div class="section-rule"><div class="section-rule-dot"></div></div>
+        <p class="section-body">A four-person architecture and engineering studio, collaborating across three phases from initial site analysis through final documentation and photorealistic rendering.</p>
       </div>
       <div class="team-grid">
         <div class="team-member reveal">
-          <div class="member-initial">P</div>
+          <div class="member-ring"><div class="member-initial">P</div></div>
           <div class="member-name">Perry</div>
           <div class="member-role">Architecture &amp; Design</div>
         </div>
-        <div class="team-member reveal">
-          <div class="member-initial">T</div>
+        <div class="team-member reveal reveal-delay-1">
+          <div class="member-ring"><div class="member-initial">T</div></div>
           <div class="member-name">Tyson</div>
           <div class="member-role">Architecture &amp; Design</div>
         </div>
-        <div class="team-member reveal">
-          <div class="member-initial">D</div>
+        <div class="team-member reveal reveal-delay-2">
+          <div class="member-ring"><div class="member-initial">D</div></div>
           <div class="member-name">Dillon</div>
           <div class="member-role">Architecture &amp; Design</div>
         </div>
-        <div class="team-member reveal">
-          <div class="member-initial">A</div>
+        <div class="team-member reveal reveal-delay-3">
+          <div class="member-ring"><div class="member-initial">A</div></div>
           <div class="member-name">Aden</div>
           <div class="member-role">Architecture &amp; Design</div>
         </div>
@@ -1030,36 +1305,43 @@
     </div>
   </section>
 
-  <!-- Footer -->
+  <!-- ═══ FOOTER ═══ -->
   <footer>
-    <div class="footer-logo">De Boas</div>
-    <p class="footer-tagline">Brazilian Steakhouse · Waukee, Iowa · Est. 2026</p>
-    <p class="footer-meta">Architecture &amp; Engineering Capstone — Perry · Tyson · Dillon · Aden</p>
+    <div class="footer-inner">
+      <div class="footer-emblem">
+        <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="14" cy="14" r="12" stroke="#c9952a" stroke-width="1" opacity="0.6"/>
+          <line x1="9" y1="20" x2="19" y2="8" stroke="#c9952a" stroke-width="1.2" stroke-linecap="round"/>
+          <circle cx="14" cy="14" r="2" fill="#c9952a" opacity="0.7"/>
+        </svg>
+      </div>
+      <div class="footer-logo">De Boas</div>
+      <p class="footer-tagline">Brazilian Steakhouse · Waukee, Iowa · Est. 2026</p>
+      <div class="footer-divider"></div>
+      <p class="footer-meta">Architecture &amp; Engineering Capstone &nbsp;·&nbsp; Perry · Tyson · Dillon · Aden</p>
+    </div>
   </footer>
 
   <!-- Lightbox -->
   <div class="lightbox" id="lightbox" onclick="closeLightbox()">
     <button class="lightbox-close" onclick="closeLightbox()">×</button>
-    <img id="lightbox-img" src="" alt="" />
+    <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()" />
   </div>
 
   <script>
-    // Nav scroll class
+    /* ── Nav scroll ── */
     const nav = document.getElementById('nav');
     window.addEventListener('scroll', () => {
-      nav.classList.toggle('scrolled', window.scrollY > 60);
-    });
+      nav.classList.toggle('scrolled', window.scrollY > 50);
+    }, { passive: true });
 
-    // Scroll reveal
-    const reveals = document.querySelectorAll('.reveal');
+    /* ── Scroll reveal ── */
     const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-    reveals.forEach(el => observer.observe(el));
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-    // Tabs
+    /* ── Tabs ── */
     function switchTab(btn, id) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -1067,7 +1349,7 @@
       document.getElementById(id).classList.add('active');
     }
 
-    // Lightbox
+    /* ── Lightbox ── */
     function openLightbox(img) {
       document.getElementById('lightbox-img').src = img.src;
       document.getElementById('lightbox').classList.add('open');
@@ -1077,7 +1359,7 @@
       document.getElementById('lightbox').classList.remove('open');
       document.body.style.overflow = '';
     }
-    document.querySelectorAll('.lightbox-trigger, .lightbox-trigger img').forEach(el => {
+    document.querySelectorAll('.lightbox-trigger').forEach(el => {
       el.addEventListener('click', function(e) {
         e.stopPropagation();
         const img = this.tagName === 'IMG' ? this : this.querySelector('img');
@@ -1085,6 +1367,123 @@
       });
     });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+    /* ═══════════════════════════════════════
+       HERO CANVAS — Ember Particle System
+    ═══════════════════════════════════════ */
+    (function() {
+      const canvas = document.getElementById('hero-canvas');
+      const ctx = canvas.getContext('2d');
+      let W, H, particles = [];
+
+      function resize() {
+        W = canvas.width  = canvas.offsetWidth;
+        H = canvas.height = canvas.offsetHeight;
+      }
+      window.addEventListener('resize', resize, { passive: true });
+      resize();
+
+      /* Particle class */
+      class Ember {
+        constructor() { this.reset(true); }
+        reset(init) {
+          this.x = Math.random() * W;
+          this.y = init ? Math.random() * H : H + 10;
+          this.size = Math.random() * 2.2 + 0.4;
+          this.speedY = -(Math.random() * 0.6 + 0.2);
+          this.speedX = (Math.random() - 0.5) * 0.4;
+          this.life = 0;
+          this.maxLife = Math.random() * 220 + 120;
+          this.hue = Math.random() * 30 + 30; /* 30–60° = amber/gold */
+          this.sat = Math.random() * 30 + 70;
+          this.flicker = Math.random() * Math.PI * 2;
+          this.flickerSpeed = Math.random() * 0.06 + 0.02;
+          this.drift = Math.random() * Math.PI * 2;
+          this.driftSpeed = Math.random() * 0.02 + 0.005;
+        }
+        update() {
+          this.life++;
+          this.drift += this.driftSpeed;
+          this.flicker += this.flickerSpeed;
+          this.x += this.speedX + Math.sin(this.drift) * 0.3;
+          this.y += this.speedY;
+          if (this.life > this.maxLife || this.y < -10) this.reset(false);
+        }
+        draw() {
+          const progress = this.life / this.maxLife;
+          const alpha = progress < 0.15
+            ? progress / 0.15
+            : progress > 0.75
+              ? 1 - (progress - 0.75) / 0.25
+              : 1;
+          const flick = 0.7 + Math.sin(this.flicker) * 0.3;
+          const a = alpha * flick * 0.75;
+          const s = this.size * (1 - progress * 0.4);
+
+          /* Glow */
+          const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, s * 4);
+          g.addColorStop(0, `hsla(${this.hue},${this.sat}%,72%,${a})`);
+          g.addColorStop(0.4, `hsla(${this.hue},${this.sat}%,55%,${a * 0.5})`);
+          g.addColorStop(1, `hsla(${this.hue},${this.sat}%,40%,0)`);
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, s * 4, 0, Math.PI * 2);
+          ctx.fillStyle = g;
+          ctx.fill();
+
+          /* Core */
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, s, 0, Math.PI * 2);
+          ctx.fillStyle = `hsla(${this.hue + 20},100%,88%,${a})`;
+          ctx.fill();
+        }
+      }
+
+      /* Also draw subtle slow-moving large light orbs */
+      class Orb {
+        constructor() { this.reset(true); }
+        reset(init) {
+          this.x = Math.random() * W;
+          this.y = init ? Math.random() * H : H * 0.8 + Math.random() * H * 0.2;
+          this.r = Math.random() * 120 + 60;
+          this.speedY = -(Math.random() * 0.08 + 0.02);
+          this.speedX = (Math.random() - 0.5) * 0.06;
+          this.life = 0;
+          this.maxLife = Math.random() * 600 + 400;
+          this.hue = Math.random() < 0.5 ? 38 : 130; /* gold or green */
+        }
+        update() {
+          this.life++;
+          this.x += this.speedX;
+          this.y += this.speedY;
+          if (this.life > this.maxLife || this.y < -this.r) this.reset(false);
+        }
+        draw() {
+          const progress = this.life / this.maxLife;
+          const alpha = progress < 0.2 ? progress / 0.2 : progress > 0.7 ? 1 - (progress - 0.7) / 0.3 : 1;
+          const a = alpha * 0.035;
+          const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.r);
+          g.addColorStop(0, `hsla(${this.hue},80%,50%,${a})`);
+          g.addColorStop(1, `hsla(${this.hue},60%,30%,0)`);
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+          ctx.fillStyle = g;
+          ctx.fill();
+        }
+      }
+
+      /* Populate */
+      for (let i = 0; i < 90; i++) particles.push(new Ember());
+      const orbs = [];
+      for (let i = 0; i < 8; i++) orbs.push(new Orb());
+
+      function animate() {
+        ctx.clearRect(0, 0, W, H);
+        orbs.forEach(o => { o.update(); o.draw(); });
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animate);
+      }
+      animate();
+    })();
   </script>
 </body>
 </html>

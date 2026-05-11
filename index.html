@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>De Boas Brazilian Steakhouse — Architecture &amp; Engineering Capstone</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #c9952a;
+      --gold-light: #e8b84b;
+      --gold-dim: rgba(201,149,42,0.18);
+      --bg: #0b0b0b;
+      --bg2: #111111;
+      --bg3: #161616;
+      --text: #e8e0d0;
+      --muted: #8a8070;
+      --white: #ffffff;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 48px;
+      background: linear-gradient(to bottom, rgba(11,11,11,0.97), transparent);
+      transition: background 0.3s;
+    }
+    nav.scrolled { background: rgba(11,11,11,0.97); border-bottom: 1px solid var(--gold-dim); }
+    .nav-logo {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.5rem;
+      color: var(--gold);
+      letter-spacing: 0.02em;
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      height: 100vh;
+      min-height: 600px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('assets/slides/slide_01.png');
+      background-size: cover;
+      background-position: center top;
+      filter: brightness(0.35);
+      transform: scale(1.04);
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 30%, rgba(11,11,11,0.7) 100%);
+    }
+    .hero-bottom-fade {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 200px;
+      background: linear-gradient(to bottom, transparent, var(--bg));
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 0 24px;
+    }
+    .hero-eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 500;
+    }
+    .hero-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(3.5rem, 9vw, 7rem);
+      color: var(--white);
+      line-height: 1.05;
+      text-shadow: 0 2px 40px rgba(0,0,0,0.8);
+    }
+    .hero-subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+      color: var(--gold-light);
+      letter-spacing: 0.04em;
+    }
+    .hero-divider {
+      width: 60px;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.6;
+    }
+    .hero-meta {
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .hero-scroll {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      animation: bounce 2.4s ease-in-out infinite;
+    }
+    .hero-scroll::after {
+      content: '';
+      display: block;
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* ── Section base ── */
+    section { padding: 100px 0; }
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+    .section-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      color: var(--white);
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+    .section-rule {
+      width: 48px;
+      height: 2px;
+      background: var(--gold);
+      margin-bottom: 32px;
+    }
+    .section-body {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      color: #c8bfb0;
+      line-height: 1.85;
+      max-width: 680px;
+    }
+
+    /* ── About ── */
+    .about { background: var(--bg2); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .about-image img {
+      width: 100%;
+      border-radius: 2px;
+      border: 1px solid var(--gold-dim);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 40px;
+    }
+    .stat {
+      border-left: 2px solid var(--gold);
+      padding-left: 16px;
+    }
+    .stat-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      color: var(--gold-light);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── Phases ── */
+    .phases { background: var(--bg); }
+    .phases-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      margin-top: 56px;
+    }
+    .phase-card {
+      background: var(--bg3);
+      padding: 40px 32px;
+      border-top: 1px solid var(--gold-dim);
+      transition: border-color 0.3s;
+    }
+    .phase-card:hover { border-top-color: var(--gold); }
+    .phase-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem;
+      color: var(--gold-dim);
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .phase-card:hover .phase-num { color: rgba(201,149,42,0.4); }
+    .phase-name {
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+    .phase-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 14px;
+    }
+    .phase-card p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ── Floor Plans ── */
+    .floorplans { background: var(--bg2); }
+    .plans-tabs {
+      display: flex;
+      gap: 0;
+      margin-top: 48px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--gold-dim);
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 14px 32px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .tab-btn:hover { color: var(--gold-light); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .plan-frame {
+      background: #1a1a1a;
+      border: 1px solid var(--gold-dim);
+      padding: 16px;
+      border-radius: 2px;
+    }
+    .plan-frame img {
+      width: 100%;
+      display: block;
+      cursor: zoom-in;
+    }
+    .plan-caption {
+      margin-top: 16px;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* ── Cross Sections ── */
+    .sections-wrap { background: var(--bg); }
+    .section-slides {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 48px;
+    }
+    .slide-card {
+      background: var(--bg3);
+      border: 1px solid var(--gold-dim);
+      overflow: hidden;
+      cursor: zoom-in;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .slide-card:hover { border-color: var(--gold); transform: translateY(-3px); }
+    .slide-card img { width: 100%; display: block; }
+    .slide-card-label {
+      padding: 14px 18px;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-top: 1px solid var(--gold-dim);
+    }
+
+    /* ── 3D View ── */
+    .model-view { background: var(--bg2); }
+    .model-showcase {
+      margin-top: 48px;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+    .model-img-wrap {
+      border: 1px solid var(--gold-dim);
+      overflow: hidden;
+      background: #0f0f0f;
+      cursor: zoom-in;
+    }
+    .model-img-wrap img { width: 100%; display: block; transition: transform 0.6s; }
+    .model-img-wrap:hover img { transform: scale(1.03); }
+    .model-info { display: flex; flex-direction: column; gap: 20px; }
+    .info-block {
+      padding: 24px;
+      background: var(--bg3);
+      border-left: 2px solid var(--gold);
+    }
+    .info-block h4 {
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+    .info-block p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      color: #a09888;
+      line-height: 1.65;
+    }
+
+    /* ── Renderings ── */
+    .renderings { background: var(--bg); }
+    .rendering-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+      margin-top: 48px;
+    }
+    .render-item {
+      position: relative;
+      overflow: hidden;
+      cursor: zoom-in;
+      aspect-ratio: 16/10;
+      background: #0f0f0f;
+    }
+    .render-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease, filter 0.4s;
+      filter: brightness(0.9);
+    }
+    .render-item:hover img { transform: scale(1.07); filter: brightness(1.05); }
+    .render-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
+      display: flex;
+      align-items: flex-end;
+      padding: 16px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .render-item:hover .render-overlay { opacity: 1; }
+    .render-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    /* ── Materials ── */
+    .materials { background: var(--bg2); }
+    .materials-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: start;
+      margin-top: 48px;
+    }
+    .materials-img {
+      border: 1px solid var(--gold-dim);
+      overflow: hidden;
+    }
+    .materials-img img { width: 100%; display: block; }
+    .materials-list { display: flex; flex-direction: column; gap: 0; }
+    .material-group { margin-bottom: 36px; }
+    .material-group h4 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--gold-light);
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--gold-dim);
+    }
+    .material-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.9rem;
+      color: #b0a898;
+    }
+    .material-item::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .materials-note {
+      margin-top: 20px;
+      padding: 20px;
+      background: var(--bg3);
+      border-left: 2px solid var(--gold);
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1rem;
+      color: #8a8070;
+      line-height: 1.7;
+    }
+
+    /* ── Code Compliance ── */
+    .compliance { background: var(--bg); }
+    .code-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-top: 48px;
+    }
+    .code-card {
+      background: var(--bg3);
+      border: 1px solid var(--gold-dim);
+      padding: 32px;
+    }
+    .code-card h3 {
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--gold-dim);
+    }
+    .code-item {
+      display: flex;
+      gap: 14px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      align-items: flex-start;
+    }
+    .code-tag {
+      font-size: 0.67rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--gold);
+      background: var(--gold-dim);
+      padding: 2px 7px;
+      border-radius: 2px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .code-desc {
+      font-size: 0.83rem;
+      color: #8a8070;
+      line-height: 1.55;
+    }
+    .compliance-img-wrap {
+      margin-top: 48px;
+      border: 1px solid var(--gold-dim);
+    }
+    .compliance-img-wrap img { width: 100%; display: block; }
+
+    /* ── Team ── */
+    .team { background: var(--bg2); }
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      margin-top: 56px;
+    }
+    .team-member {
+      background: var(--bg3);
+      padding: 40px 24px;
+      text-align: center;
+      border-top: 1px solid var(--gold-dim);
+      transition: border-top-color 0.3s;
+    }
+    .team-member:hover { border-top-color: var(--gold); }
+    .member-initial {
+      width: 64px;
+      height: 64px;
+      background: var(--gold-dim);
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      color: var(--gold);
+    }
+    .member-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 6px;
+    }
+    .member-role {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--bg);
+      border-top: 1px solid var(--gold-dim);
+      padding: 56px 0;
+      text-align: center;
+    }
+    .footer-logo {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.4rem;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .footer-tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+    .footer-meta {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      color: #4a4840;
+      text-transform: uppercase;
+    }
+
+    /* ── Lightbox ── */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: rgba(0,0,0,0.92);
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 88vh;
+      object-fit: contain;
+      border: 1px solid var(--gold-dim);
+      box-shadow: 0 0 80px rgba(0,0,0,0.8);
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 24px; right: 32px;
+      font-size: 1.8rem;
+      color: var(--muted);
+      cursor: pointer;
+      background: none;
+      border: none;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    .lightbox-close:hover { color: var(--gold); }
+
+    /* ── Scroll reveal ── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+      .about-grid, .materials-grid, .model-showcase { grid-template-columns: 1fr; gap: 32px; }
+      .phases-grid { grid-template-columns: 1fr; gap: 2px; }
+      .section-slides { grid-template-columns: 1fr; }
+      .code-grid { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: repeat(2, 1fr); }
+      .rendering-grid { grid-template-columns: 1fr; }
+      .container { padding: 0 20px; }
+      section { padding: 64px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav id="nav">
+    <a href="#" class="nav-logo">De Boas</a>
+    <ul class="nav-links">
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#floorplans">Floor Plans</a></li>
+      <li><a href="#sections">Sections</a></li>
+      <li><a href="#renderings">Renderings</a></li>
+      <li><a href="#materials">Materials</a></li>
+      <li><a href="#team">Team</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-bottom-fade"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Architecture &amp; Engineering · Capstone Project</p>
+      <h1 class="hero-title">De Boas</h1>
+      <p class="hero-subtitle">Brazilian Steakhouse — Waukee, Iowa</p>
+      <div class="hero-divider"></div>
+      <p class="hero-meta">Phase III Presentation · Established 2026</p>
+    </div>
+    <div class="hero-scroll">Scroll</div>
+  </section>
+
+  <!-- About / Overview -->
+  <section class="about" id="overview">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <p class="section-label">Project Overview</p>
+          <h2 class="section-title">A Vision for Dining in Iowa</h2>
+          <div class="section-rule"></div>
+          <p class="section-body">
+            De Boas Brazilian Steakhouse is a full-scale two-story restaurant concept designed from the ground up as an architecture and engineering capstone. Located near Target on Ashworth Road in Waukee, Iowa, the project spans site selection, schematic design, structural analysis, code compliance, and interior rendering — all developed in Revit.
+          </p>
+          <p class="section-body" style="margin-top:16px;">
+            The name <em>De Boas</em> — Portuguese for "feeling good" — reflects the warm, communal spirit of Brazilian churrasco culture, elevated to an upscale dining experience that meets Waukee's building codes while delivering a distinctive, thematic atmosphere.
+          </p>
+          <div class="about-stats">
+            <div class="stat">
+              <div class="stat-value">2</div>
+              <div class="stat-label">Floors</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">3</div>
+              <div class="stat-label">Phases</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">14'</div>
+              <div class="stat-label">Floor-to-Floor Height</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">2026</div>
+              <div class="stat-label">Concept Year</div>
+            </div>
+          </div>
+        </div>
+        <div class="about-image reveal">
+          <img src="assets/slides/slide_09.png" alt="3D Model of De Boas" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Phase Overview -->
+  <section class="phases">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-label">Development Phases</p>
+        <h2 class="section-title">The Design Journey</h2>
+        <div class="section-rule"></div>
+      </div>
+      <div class="phases-grid">
+        <div class="phase-card reveal">
+          <div class="phase-num">01</div>
+          <p class="phase-name">Phase I</p>
+          <h3>Site &amp; Concept</h3>
+          <p>Selected site near Target on Ashworth Road. Developed initial massing model, established the Brazilian steakhouse theme, and produced bubble diagrams to lay out spatial relationships.</p>
+        </div>
+        <div class="phase-card reveal">
+          <div class="phase-num">02</div>
+          <p class="phase-name">Phase II</p>
+          <h3>Plans &amp; Analysis</h3>
+          <p>Finalized the floor plan layout. Produced full Revit floor plans, conducted code summaries covering accessibility, structural load, and egress, and performed a structural analysis of the steel framing system.</p>
+        </div>
+        <div class="phase-card reveal">
+          <div class="phase-num">03</div>
+          <p class="phase-name">Phase III</p>
+          <h3>Detail &amp; Rendering</h3>
+          <p>Added wall sections and poche to floor plans. Developed cross-sections, detailed code compliance documentation, material selections, and final interior renderings of the dining areas and kitchen.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Floor Plans -->
+  <section class="floorplans" id="floorplans">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-label">Technical Drawings</p>
+        <h2 class="section-title">Floor Plans</h2>
+        <div class="section-rule"></div>
+        <p class="section-body">Two-story layout designed to maximize dining capacity while providing dedicated utility space, centralized circulation, and ADA-compliant restrooms on both levels.</p>
+      </div>
+      <div class="plans-tabs reveal">
+        <button class="tab-btn active" onclick="switchTab(this, 'floor1')">First Floor</button>
+        <button class="tab-btn" onclick="switchTab(this, 'floor2')">Second Floor</button>
+        <button class="tab-btn" onclick="switchTab(this, 'overview')">Plan Overview</button>
+      </div>
+      <div class="tab-panel active" id="floor1">
+        <div class="plan-frame">
+          <img src="assets/slides/slide_10.png" alt="First Floor Plan" class="lightbox-trigger" />
+        </div>
+        <p class="plan-caption">Level 1 — 0'-0" · Main Dining, Kitchen, Service Entry</p>
+      </div>
+      <div class="tab-panel" id="floor2">
+        <div class="plan-frame">
+          <img src="assets/slides/slide_11.png" alt="Second Floor Plan" class="lightbox-trigger" />
+        </div>
+        <p class="plan-caption">Level 2 — 14'-0" · Upper Dining, Lounge, Restrooms</p>
+      </div>
+      <div class="tab-panel" id="overview">
+        <div class="plan-frame">
+          <img src="assets/slides/slide_03.png" alt="Floor Plan Overview" class="lightbox-trigger" />
+        </div>
+        <p class="plan-caption">Both Levels — Comparative Overview</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cross Sections -->
+  <section class="sections-wrap" id="sections">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-label">Structural Documentation</p>
+        <h2 class="section-title">Cross-Sections</h2>
+        <div class="section-rule"></div>
+        <p class="section-body">Detailed sections through the building reveal the two-level structural system, wall assembly, and interior spatial relationships — including kitchen, dining, and circulation zones at both levels.</p>
+      </div>
+      <div class="section-slides">
+        <div class="slide-card reveal lightbox-trigger">
+          <img src="assets/slides/slide_04.png" alt="Cross Section Drawings" />
+          <div class="slide-card-label">Longitudinal &amp; Wall Sections</div>
+        </div>
+        <div class="slide-card reveal lightbox-trigger">
+          <img src="assets/slides/slide_08.png" alt="Section View Levels" />
+          <div class="slide-card-label">Section View — Level 1 &amp; Level 2</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3D Model -->
+  <section class="model-view">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-label">Digital Model</p>
+        <h2 class="section-title">Revit 3D Model</h2>
+        <div class="section-rule"></div>
+      </div>
+      <div class="model-showcase">
+        <div class="model-img-wrap reveal lightbox-trigger">
+          <img src="assets/slides/slide_09.png" alt="3D Isometric View" />
+        </div>
+        <div class="model-info reveal">
+          <div class="info-block">
+            <h4>Software</h4>
+            <p>Modeled entirely in Autodesk Revit — enabling coordinated architectural, structural, and MEP documentation from a single BIM model.</p>
+          </div>
+          <div class="info-block">
+            <h4>Structural System</h4>
+            <p>Light gauge steel framing with brick and concrete masonry walls. Precast concrete at exterior. Flat roof with rooftop access.</p>
+          </div>
+          <div class="info-block">
+            <h4>Site</h4>
+            <p>Ashworth Road corridor, Waukee, Iowa. 50-ft riparian buffer from pond, landscaped walking path, 24-ft access lanes, and dedicated parking per IPC &amp; Iowa DNR requirements.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Renderings -->
+  <section class="renderings" id="renderings">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-label">Interior Visualization</p>
+        <h2 class="section-title">Renderings</h2>
+        <div class="section-rule"></div>
+        <p class="section-body">Photorealistic renders of the dining room, commercial kitchen, and second-floor lounge showcase the upscale atmosphere envisioned for De Boas — warm wood tones, open floor-to-ceiling windows, and flexible seating throughout.</p>
+      </div>
+      <div class="rendering-grid reveal">
+        <div class="render-item lightbox-trigger" style="grid-column: span 2;">
+          <img src="assets/slides/slide_12.png" alt="Dining Room and Kitchen Rendering" />
+          <div class="render-overlay"><span class="render-label">Main Dining &amp; Kitchen</span></div>
+        </div>
+        <div class="render-item lightbox-trigger">
+          <img src="assets/slides/slide_13.png" alt="Second Floor Lounge Rendering" />
+          <div class="render-overlay"><span class="render-label">Second Floor Lounge</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Materials -->
+  <section class="materials" id="materials">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-label">Material Palette</p>
+        <h2 class="section-title">Material Selections</h2>
+        <div class="section-rule"></div>
+      </div>
+      <div class="materials-grid">
+        <div class="materials-img reveal lightbox-trigger">
+          <img src="assets/slides/slide_14.png" alt="Material Selections Board" />
+        </div>
+        <div class="materials-list reveal">
+          <div class="material-group">
+            <h4>Structural Materials</h4>
+            <div class="material-item">Steel framing</div>
+            <div class="material-item">Brick &amp; concrete (walls)</div>
+            <div class="material-item">Gypsum board (drywall)</div>
+            <div class="material-item">Nonslip flooring — kitchen &amp; BOH</div>
+          </div>
+          <div class="material-group">
+            <h4>Aesthetic Finishes</h4>
+            <div class="material-item">Rich wood tones — dining surfaces</div>
+            <div class="material-item">Marble-look tile — restrooms &amp; corridors</div>
+            <div class="material-item">Warm ambient lighting</div>
+            <div class="material-item">Thematic color palette — Fire &amp; Water</div>
+          </div>
+          <div class="materials-note">
+            Materials were chosen to meet Waukee building codes while providing an upscale, thematic experience aligned with the De Boas Fire &amp; Water concept.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Code Compliance -->
+  <section class="compliance">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-label">Regulatory Compliance</p>
+        <h2 class="section-title">Building Code Summary</h2>
+        <div class="section-rule"></div>
+        <p class="section-body">The project was developed in full compliance with applicable IBC, IMC, NEC, ADA, and Iowa DNR codes — documented and cross-referenced in Phase III to ensure design integrity across accessibility, mechanical, and site requirements.</p>
+      </div>
+      <div class="code-grid reveal">
+        <div class="code-card">
+          <h3>Accessibility &amp; Egress</h3>
+          <div class="code-item">
+            <span class="code-tag">ADA 2010 §404</span>
+            <span class="code-desc">Min. 36" accessible entry doors with lever hardware</span>
+          </div>
+          <div class="code-item">
+            <span class="code-tag">IBC §1006</span>
+            <span class="code-desc">Step-free entrance via accessible ramp, max 1:12 slope</span>
+          </div>
+          <div class="code-item">
+            <span class="code-tag">ADA §206</span>
+            <span class="code-desc">Continuous accessible route: parking → entry → dining → restrooms → egress</span>
+          </div>
+          <div class="code-item">
+            <span class="code-tag">ADA §208</span>
+            <span class="code-desc">1 van-accessible space per 25 parking spaces; 7-ft ADA aisle</span>
+          </div>
+          <div class="code-item">
+            <span class="code-tag">ADA §213</span>
+            <span class="code-desc">ADA-compliant restroom per floor; 1 accessible stall minimum</span>
+          </div>
+        </div>
+        <div class="code-card">
+          <h3>Mechanical &amp; Electrical</h3>
+          <div class="code-item">
+            <span class="code-tag">IMC §403</span>
+            <span class="code-desc">Ventilation per A-2 occupancy rates; outdoor air circulation for full building</span>
+          </div>
+          <div class="code-item">
+            <span class="code-tag">IMC §507.2</span>
+            <span class="code-desc">Type I exhaust hood: grease ducts, filters, integrated suppression in kitchen</span>
+          </div>
+          <div class="code-item">
+            <span class="code-tag">NEC §2702</span>
+            <span class="code-desc">Adequate branch circuits; lighting, emergency standby power for egress</span>
+          </div>
+          <div class="code-item">
+            <span class="code-tag">NFPA §7.9</span>
+            <span class="code-desc">90-min battery backup emergency lighting throughout</span>
+          </div>
+          <div class="code-item">
+            <span class="code-tag">IBC §1014</span>
+            <span class="code-desc">Nonslip flooring (COF ≥ 0.6) in kitchen; handrails on all stairs</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Location -->
+  <section class="location" style="background: var(--bg2); padding: 100px 0;">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-label">Project Site</p>
+        <h2 class="section-title">The Location</h2>
+        <div class="section-rule"></div>
+        <p class="section-body">Situated along the Ashworth Road corridor in Waukee, Iowa — selected for its high-visibility commercial surroundings, proximity to retail traffic, and available acreage to accommodate the building footprint, surface parking, and required riparian buffer.</p>
+      </div>
+      <div class="reveal" style="margin-top: 48px; border: 1px solid rgba(201,149,42,0.18); overflow: hidden; line-height: 0;">
+        <iframe
+          src="https://maps.google.com/maps?q=41.60895058493571,-93.85614288786297&z=16&output=embed"
+          width="100%"
+          height="480"
+          style="border:0; display:block;"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="De Boas site — Waukee, Iowa">
+        </iframe>
+      </div>
+      <p style="margin-top: 14px; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-align: center;">Ashworth Road · Waukee, Iowa · 41.609°N 93.856°W</p>
+    </div>
+  </section>
+
+  <!-- Team -->
+  <section class="team" id="team">
+    <div class="container">
+      <div class="reveal" style="text-align:center;">
+        <p class="section-label">The Team</p>
+        <h2 class="section-title">Designers &amp; Engineers</h2>
+        <div class="section-rule" style="margin:0 auto 32px;"></div>
+        <p class="section-body" style="margin:0 auto; text-align:center;">
+          A collaborative architecture and engineering studio project, developed across three phases from initial site analysis through final documentation and rendering.
+        </p>
+      </div>
+      <div class="team-grid">
+        <div class="team-member reveal">
+          <div class="member-initial">P</div>
+          <div class="member-name">Perry</div>
+          <div class="member-role">Architecture &amp; Design</div>
+        </div>
+        <div class="team-member reveal">
+          <div class="member-initial">T</div>
+          <div class="member-name">Tyson</div>
+          <div class="member-role">Architecture &amp; Design</div>
+        </div>
+        <div class="team-member reveal">
+          <div class="member-initial">D</div>
+          <div class="member-name">Dillon</div>
+          <div class="member-role">Architecture &amp; Design</div>
+        </div>
+        <div class="team-member reveal">
+          <div class="member-initial">A</div>
+          <div class="member-name">Aden</div>
+          <div class="member-role">Architecture &amp; Design</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-logo">De Boas</div>
+    <p class="footer-tagline">Brazilian Steakhouse · Waukee, Iowa · Est. 2026</p>
+    <p class="footer-meta">Architecture &amp; Engineering Capstone — Perry · Tyson · Dillon · Aden</p>
+  </footer>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()">×</button>
+    <img id="lightbox-img" src="" alt="" />
+  </div>
+
+  <script>
+    // Nav scroll class
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(el => observer.observe(el));
+
+    // Tabs
+    function switchTab(btn, id) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(id).classList.add('active');
+    }
+
+    // Lightbox
+    function openLightbox(img) {
+      document.getElementById('lightbox-img').src = img.src;
+      document.getElementById('lightbox').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.querySelectorAll('.lightbox-trigger, .lightbox-trigger img').forEach(el => {
+      el.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const img = this.tagName === 'IMG' ? this : this.querySelector('img');
+        if (img) openLightbox(img);
+      });
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+  </script>
+</body>
+</html>
